@@ -205,8 +205,15 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 // Physics world
 const world = new CANNON.World();
-world.gravity.set(0, -3.82, 0);
-
+world.gravity.set(0, -9.82, 0);
+// Create a static ground body
+const groundBody = new CANNON.Body({
+  mass: 0, // Static bodies have zero mass
+  shape: new CANNON.Plane(),
+});
+groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0); // Rotate to match Three.js orientation
+world.addBody(groundBody);
+groundBody.position.y = -6;
 let resetTimer = null;
 
 // Carpet sliding boundaries
