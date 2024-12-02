@@ -188,7 +188,7 @@ function animateGroundPosition(newPosition) {
   // Use GSAP to animate the position
   gsap.to(startPosition, {
     duration: 1, // Animation duration (1 second)
-    delay: 0.15,
+    delay: 0.1,
     x: targetPosition.x,
     y: targetPosition.y,
     z: targetPosition.z,
@@ -208,33 +208,34 @@ function animateGroundPosition(newPosition) {
 // updateGroundPosition(new CANNON.Vec3(-6, 0, 0));
 
 // Variables to track mouse/touch interaction
+// Variables to track movement
 let isDragging = false;
 let startX = 0;
 let currentX = 0;
 let deltaX = 0;
+let resetTimer = null;
 
 // Carpet sliding boundaries
 const carpetMinX = -10; // Left limit
 const carpetMaxX = 10; // Right limit
 
-// Mouse events
-window.addEventListener("mousedown", (e) => {
+// Mouse and touch event handlers
+function startInteraction(x) {
   isDragging = true;
-  startX = e.clientX; // Track starting point
-});
-let resetTimer = null;
+  startX = x; // Track starting point
+}
 
-window.addEventListener("mousemove", (e) => {
+function moveInteraction(x) {
   if (!isDragging) return;
 
-  currentX = e.clientX;
+  currentX = x;
   deltaX = currentX - startX; // Calculate the movement delta
 
   if (deltaX < 0) {
     // Move left
     animateGroundPosition(new CANNON.Vec3(0, -15, 0));
     const targetX = THREE.MathUtils.clamp(
-      carpetModel.position.x - 8, // Move left by 1 unit
+      carpetModel.position.x - 8, // Move left by 8 units
       carpetMinX,
       carpetMaxX
     );
@@ -248,7 +249,7 @@ window.addEventListener("mousemove", (e) => {
     // Move right
     animateGroundPosition(new CANNON.Vec3(0, -15, 0));
     const targetX = THREE.MathUtils.clamp(
-      carpetModel.position.x + 8, // Move right by 1 unit
+      carpetModel.position.x + 8, // Move right by 8 units
       carpetMinX,
       carpetMaxX
     );
@@ -261,15 +262,31 @@ window.addEventListener("mousemove", (e) => {
   }
 
   startX = currentX; // Update starting point
+
+  // Reset the timer whenever there's new movement
   if (resetTimer) {
     clearTimeout(resetTimer);
   }
-  resetTimer = setTimeout(resetPositions, 4500); // Reset after 5 seconds of no movement
-});
+  resetTimer = setTimeout(resetPositions, 4500); // Reset after 4.5 seconds of no movement
+}
 
-window.addEventListener("mouseup", () => {
+function endInteraction() {
   isDragging = false;
-});
+}
+
+// Mouse events
+window.addEventListener("mousedown", (e) => startInteraction(e.clientX));
+window.addEventListener("mousemove", (e) => moveInteraction(e.clientX));
+window.addEventListener("mouseup", endInteraction);
+
+// Touch events
+window.addEventListener("touchstart", (e) =>
+  startInteraction(e.touches[0].clientX)
+);
+window.addEventListener("touchmove", (e) =>
+  moveInteraction(e.touches[0].clientX)
+);
+window.addEventListener("touchend", endInteraction);
 function resetPositions() {
   // Reset groundBody position
   groundBody.position.set(0, 0, 0);
@@ -289,36 +306,6 @@ function resetPositions() {
     charBody.velocity.set(0, 0, 0); // Stop any movement
   }
 }
-window.addEventListener("mouseup", () => {
-  isDragging = false;
-});
-
-// Touch events
-window.addEventListener("touchstart", (e) => {
-  isDragging = true;
-  startX = e.touches[0].clientX; // Track starting point
-});
-
-window.addEventListener("touchmove", (e) => {
-  if (!isDragging) return;
-
-  currentX = e.touches[0].clientX;
-  deltaX = (currentX - startX) * 0.01; // Scale movement
-  const newPositionX = THREE.MathUtils.clamp(
-    groundBody.position.x + deltaX,
-    carpetMinX,
-    carpetMaxX
-  );
-
-  updateGroundPosition(
-    new CANNON.Vec3(newPositionX, groundBody.position.y, groundBody.position.z)
-  );
-  startX = currentX; // Update starting point
-});
-
-window.addEventListener("touchend", () => {
-  isDragging = false;
-});
 
 /**
  * Animate
