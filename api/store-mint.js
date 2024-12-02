@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     );
 
     res.status(200).json({
-      message: "Address stored successfully",
+      message: "Thank you for helping train our model!",
       data: result.rows[0], // Return the inserted row
     });
   } catch (error) {
