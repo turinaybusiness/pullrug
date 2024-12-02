@@ -502,7 +502,10 @@ form#checkForm[disabled] {
   fill: #000;
 }
 @media (max-width: 768px) {
-  .output-container {
+  .left-container {
+    visibility: hidden;
+  }
+  .right-container {
     visibility: hidden;
   }
   .ca {

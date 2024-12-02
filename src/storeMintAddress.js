@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
       thankYouMessage.textContent =
         "Never gonna let you down, never gonna let you go!";
       thankYouMessage.style.display = "block";
-      thankYouMessage.style.color = "green"; // Optional styling
+      thankYouMessage.style.color = "white"; // Optional styling
       return; // Stop further form submission
     }
 
