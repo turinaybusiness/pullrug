@@ -162,7 +162,7 @@ body {
   /* Glassmorphism styles */
   background: rgba(255, 255, 255, 0.15); /* Transparent white background */
 
-  border-radius: 16px; /* Rounded corners */
+  border-radius: 4px; /* Rounded corners */
   backdrop-filter: blur(10px); /* Background blur effect */
   -webkit-backdrop-filter: blur(10px); /* Safari support */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
