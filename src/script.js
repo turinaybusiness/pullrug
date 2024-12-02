@@ -170,6 +170,7 @@ scene.add(camera);
 const controls = new OrbitControls(camera, canvas);
 // controls.target.y = 3.5
 controls.enableDamping = true;
+controls.enableRotate = false;
 // Set limits for vertical rotation (y-axis)
 controls.minPolarAngle = Math.PI / 4; // Lower limit (45 degrees)
 controls.maxPolarAngle = Math.PI / 2; // Upper limit (90 degrees)

@@ -12,11 +12,17 @@
     "vite-plugin-restart": "^0.4.1"
   },
   "dependencies": {
+    "@apollo/client": "^3.11.10",
     "axios": "^1.7.8",
     "cannon-es": "^0.20.0",
     "cannon-es-debugger": "^1.0.0",
+    "graphql": "^16.9.0",
+    "graphql-ws": "^5.16.0",
     "gsap": "^3.12.5",
     "lil-gui": "^0.19.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "subscriptions-transport-ws": "^0.11.0",
     "three": "^0.166.1"
   }
 }

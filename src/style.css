@@ -143,3 +143,67 @@ body {
   box-shadow: 0 1px 1px 0 rgba(255, 255, 255, 0.75),
     inset 0 2px 2px rgba(0, 0, 0, 0.25);
 }
+/* Container styling */
+.output-container {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  width: 500px;
+  max-height: 80%;
+  overflow-y: auto;
+  /* background-color: #ffffff; */
+  /* border: 1px solid #ccc; */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  font-family: Arial, sans-serif;
+  z-index: 100;
+  /* Glassmorphism styles */
+  background: rgba(255, 255, 255, 0.15); /* Transparent white background */
+  border: 1px solid rgba(255, 255, 255, 0.25); /* Light border */
+  border-radius: 16px; /* Rounded corners */
+  backdrop-filter: blur(10px); /* Background blur effect */
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  scrollbar-width: thin; /* Makes the scrollbar narrower */
+  scrollbar-color: #9d3636 transparent; /* Transparent thumb and track */ Thumb color and track color */
+}
+.output-container::-webkit-scrollbar {
+  width: 12px; /* Width of the vertical scrollbar */
+  background: transparent; /* Make the corner invisible */
+}
+.output-container::-webkit-scrollbar-corner {
+  background: transparent; /* Make the corner invisible */
+}
+.output-container h2 {
+  text-align: center;
+  color: #9d3636;
+  padding: 0.5em 0.5em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtle shadow for text */
+}
+/* Leaderboard item styles */
+.leaderboard-item {
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  line-height: 1.4;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtle shadow for text */
+}
+
+/* Alternating light and dark styles */
+.leaderboard-item.light {
+  background-color: #9d36367c;
+  color: white;
+}
+
+.leaderboard-item.dark {
+  background-color: #9d3636;
+  color: white;
+}
+
+/* Bold styles for labels */
+.leaderboard-item strong {
+  font-weight: bold;
+}
