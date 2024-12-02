@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   const { address } = req.body;
 
-  if (!address || address.length !== 48 || !address.endsWith("pump")) {
+  if (!address || address.length !== 44 || !address.endsWith("pump")) {
     return res.status(400).json({ error: "Invalid Mint Address" });
   }
 
