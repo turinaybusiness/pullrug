@@ -25,13 +25,13 @@ const scene = new THREE.Scene();
 
 const gltfLoader = new GLTFLoader();
 const rgbeLoader = new RGBELoader();
-rgbeLoader.load("/sky.hdr", (environmentMap) => {
-  environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+// rgbeLoader.load("/sky.hdr", (environmentMap) => {
+//   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
 
-  scene.background = environmentMap;
+//   scene.background = environmentMap;
 
-  // scene.environment = environmentMap
-});
+//   // scene.environment = environmentMap
+// });
 
 let mixer = null;
 let charBody, characterModel, carpetModel, carpetMesh, characterpos, charShape;
@@ -188,7 +188,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(sizes.width, sizes.height);
-// renderer.setClearColor(0x3f3f3f, 1);
+renderer.setClearColor(0x3f3f3f, 0);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 // Physics world
