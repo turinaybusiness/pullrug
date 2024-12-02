@@ -2,8 +2,9 @@ document.getElementById("rugForm").addEventListener("submit", async (event) => {
   event.preventDefault(); // Prevent form reloading
 
   const mintInput = document.getElementById("rugInput").value.trim();
-
-  if (mintInput.length === 48 && mintInput.endsWith("pump")) {
+  console.log(`Input length: ${mintInput.length}`); // Debug: Log the input length
+  console.log(`Input value: "${mintInput}"`); // Debug: Log the input value
+  if (mintInput.length === 44 && mintInput.endsWith("pump")) {
     try {
       const response = await fetch("/api/store-mint", {
         method: "POST",
