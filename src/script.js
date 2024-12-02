@@ -211,6 +211,7 @@ window.addEventListener("mousedown", (e) => {
   isDragging = true;
   startX = e.clientX; // Track starting point
 });
+let resetTimer = null;
 
 window.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
@@ -249,8 +250,34 @@ window.addEventListener("mousemove", (e) => {
   }
 
   startX = currentX; // Update starting point
+  if (resetTimer) {
+    clearTimeout(resetTimer);
+  }
+  resetTimer = setTimeout(resetPositions, 4500); // Reset after 5 seconds of no movement
 });
 
+window.addEventListener("mouseup", () => {
+  isDragging = false;
+});
+function resetPositions() {
+  // Reset groundBody position
+  groundBody.position.set(0, 0, 0);
+
+  // Reset carpetModel position
+  gsap.to(carpetModel.position, {
+    duration: 0.5,
+    x: 0,
+    y: 0,
+    z: 0,
+    ease: "power2.out",
+  });
+
+  // Reset other objects if needed (e.g., characterModel)
+  if (charBody) {
+    charBody.position.set(0, 1, 0);
+    charBody.velocity.set(0, 0, 0); // Stop any movement
+  }
+}
 window.addEventListener("mouseup", () => {
   isDragging = false;
 });
