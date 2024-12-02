@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const thankYouMessage = document.getElementById("thankYouMessage");
 
   // Load the audio file
-  const specialSound = new Audio("/sfx.mp3");
 
   connectAccountButton.addEventListener("click", function () {
     window.open("https://x.com/Pazyrykfirstrug", "_blank");
@@ -18,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Special behavior for the specific Mint address
     if (mintInput === "3xQnWtcvD2vdWDNDbkJxWviYVgRpTJdz3pnM8gyKpump") {
       // Play the sound
-      specialSound.play();
+      window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
 
       // Display the special message
       thankYouMessage.textContent =
