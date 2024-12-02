@@ -5,6 +5,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import * as CANNON from "cannon-es";
 import CannonDebugger from "cannon-es-debugger";
 import { gsap } from "gsap";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
+
 /**
  * Base
  */
@@ -22,33 +24,41 @@ const scene = new THREE.Scene();
  */
 
 const gltfLoader = new GLTFLoader();
+const rgbeLoader = new RGBELoader();
+rgbeLoader.load("/sky.hdr", (environmentMap) => {
+  environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+
+  scene.background = environmentMap;
+
+  // scene.environment = environmentMap
+});
 
 let mixer = null;
-let charBody, characterModel, carpetModel;
+let charBody, characterModel, carpetModel, carpetMesh, characterpos, charShape;
 const charscale = 0.05;
 gltfLoader.load("/models/carpet.glb", (gltf) => {
   carpetModel = gltf.scene;
+
   carpetModel.scale.set(charscale, charscale, charscale);
   carpetModel.traverse((child) => {
     if (child.isMesh) {
       child.receiveShadow = true; // Carpet receives shadows
     }
   });
-  scene.add(carpetModel);
+  //   scene.add(carpetModel);
 });
-gltfLoader.load("/models/wave.glb", (gltf) => {
+gltfLoader.load("/models/character5.glb", (gltf) => {
   characterModel = gltf.scene;
+  characterpos = gltf.scene.getObjectByName("Empty");
+  animeteModel();
   gltf.scene.scale.set(charscale, charscale, charscale);
-  characterModel.traverse((child) => {
-    if (child.isMesh) {
-      child.castShadow = true; // Wave casts shadows
-    }
-  });
   scene.add(gltf.scene);
+  carpetMesh = gltf.scene.getObjectByName("carpet");
+  carpetMesh.receiveShadow = true;
 
-  // Extract geometry from the GLB model
-  const geometry = gltf.scene.children[0].children[0].geometry; // Assuming the first child contains the geometry
+  const geometry = gltf.scene.getObjectByName("model_0").geometry; // Assuming the first child contains the geometry
   console.log(geometry);
+  geometry.castShadow = true;
   // Convert THREE.js geometry to Cannon.js Trimesh
   const vertices = geometry.attributes.position.array; // Get vertices
   const indices = geometry.index.array; // Get face indices
@@ -65,11 +75,11 @@ gltfLoader.load("/models/wave.glb", (gltf) => {
   );
 
   // Create Trimesh with scaled vertices
-  const charShape = new CANNON.Trimesh(scaledVertices, Array.from(indices));
+  charShape = new CANNON.Trimesh(scaledVertices, Array.from(indices));
 
   // Create the physics body with Trimesh
   charBody = new CANNON.Body({
-    mass: 1, // Dynamic body
+    mass: 0, // Dynamic body
     shape: charShape,
     position: new CANNON.Vec3(0, 1, 0), // Set initial position
   });
@@ -79,23 +89,30 @@ gltfLoader.load("/models/wave.glb", (gltf) => {
     const action = mixer.clipAction(gltf.animations[0]);
     action.loop = THREE.LoopRepeat;
     action.play();
+    const action2 = mixer.clipAction(gltf.animations[1]);
+    action2.loop = THREE.LoopRepeat;
+    action2.play();
   }
 });
+function animeteModel() {
+  // Reset groundBody position
+  // characterModel.position.set(0, 0, 0);
 
-/**
- * Floor
- */
-const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(10, 10),
-  new THREE.MeshStandardMaterial({
-    color: "#444444",
-    metalness: 0,
-    roughness: 0.5,
-  })
-);
-floor.receiveShadow = true;
-floor.rotation.x = -Math.PI * 0.5;
-// scene.add(floor);
+  // Reset carpetModel position
+  gsap.fromTo(
+    characterpos.position,
+    // From: Starting position
+    { x: 400, y: 0, z: 0 }, // Example starting position
+    // To: Target position
+    {
+      duration: 2,
+      x: 0,
+      y: -20,
+      z: 0,
+      ease: "power2.out",
+    }
+  );
+}
 
 /**
  * Lights
@@ -141,20 +158,25 @@ window.addEventListener("resize", () => {
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(
-  75,
+  60,
   sizes.width / sizes.height,
   0.1,
   3000
 );
-camera.position.set(0, 4, 10);
+camera.position.set(0, 4, 15);
 scene.add(camera);
-camera.rotation.x = -Math.PI / 12;
+// camera.rotation.x = -Math.PI / 12;
 // Update camera position dynamically
+const controls = new OrbitControls(camera, canvas);
+// controls.target.y = 3.5
+controls.enableDamping = true;
+// Set limits for vertical rotation (y-axis)
+controls.minPolarAngle = Math.PI / 4; // Lower limit (45 degrees)
+controls.maxPolarAngle = Math.PI / 2; // Upper limit (90 degrees)
 
-// Controls;
-// const controls = new OrbitControls(camera, canvas);
-// // controls.target.set(0, 0.75, 0);
-// controls.enableDamping = true;
+// Optional: Prevent zoom or panning if needed
+controls.enableZoom = false; // Allow zooming (set to false to disable)
+controls.enablePan = false; // Allow panning (set to false to disable)
 
 /**
  * Renderer
@@ -165,134 +187,70 @@ const renderer = new THREE.WebGLRenderer({
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(sizes.width, sizes.height);
-renderer.setClearColor(0x3f3f3f, 1);
+// renderer.setClearColor(0x3f3f3f, 1);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 // Physics world
 const world = new CANNON.World();
 world.gravity.set(0, -9.82, 0);
 
-const groundBody = new CANNON.Body({
-  mass: 0, // Static body
-  shape: new CANNON.Plane(), // Infinite plane in Cannon.js
-  position: new CANNON.Vec3(0, 0, 0), // Positioned at the origin
-});
-groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-world.addBody(groundBody);
-groundBody.type = CANNON.Body.KINEMATIC;
-// groundBody.velocity.set(0, -1, 0);
-function animateGroundPosition(newPosition) {
-  const startPosition = groundBody.position.clone(); // Clone current position
-  const targetPosition = newPosition.clone(); // Target position
-
-  // Use GSAP to animate the position
-  gsap.to(startPosition, {
-    duration: 1, // Animation duration (1 second)
-    delay: 0.1,
-    x: targetPosition.x,
-    y: targetPosition.y,
-    z: targetPosition.z,
-    ease: "power2.out",
-    onUpdate: () => {
-      // Update groundBody position during animation
-      groundBody.position.set(
-        startPosition.x,
-        startPosition.y,
-        startPosition.z
-      );
-    },
-  });
-}
-
-// Example usage
-// updateGroundPosition(new CANNON.Vec3(-6, 0, 0));
-
-// Variables to track mouse/touch interaction
-// Variables to track movement
-let isDragging = false;
-let startX = 0;
-let currentX = 0;
-let deltaX = 0;
 let resetTimer = null;
 
 // Carpet sliding boundaries
-const carpetMinX = -10; // Left limit
-const carpetMaxX = 10; // Right limit
+const carpetMinX = -1000; // Left limit
+const carpetMaxX = 1000; // Right limit
+function recreateBodyWithNewMass(newMass) {
+  // Save current position and velocity
+  const position = charBody.position.clone();
+  const velocity = charBody.velocity.clone();
 
-// Mouse and touch event handlers
-function startInteraction(x) {
-  isDragging = true;
-  startX = x; // Track starting point
+  // Remove the old body
+  world.removeBody(charBody);
+
+  // Create a new body with the updated mass
+  charBody = new CANNON.Body({
+    mass: newMass, // New mass
+    shape: charShape,
+    position: position, // Keep current position
+  });
+  charBody.velocity.copy(velocity); // Keep current velocity
+  world.addBody(charBody);
+
+  console.log("Body recreated with new mass:", newMass);
 }
+function moveLeft() {
+  recreateBodyWithNewMass(1);
 
-function moveInteraction(x) {
-  if (!isDragging) return;
+  const targetX = THREE.MathUtils.clamp(
+    carpetMesh.position.x - 1000, // Move left by 500 units
+    carpetMinX,
+    carpetMaxX
+  );
 
-  currentX = x;
-  deltaX = currentX - startX; // Calculate the movement delta
+  gsap.to(carpetMesh.position, {
+    duration: 3,
+    x: targetX,
+    ease: "power2.out",
+  });
 
-  if (deltaX < 0) {
-    // Move left
-    animateGroundPosition(new CANNON.Vec3(0, -15, 0));
-    const targetX = THREE.MathUtils.clamp(
-      carpetModel.position.x - 8, // Move left by 8 units
-      carpetMinX,
-      carpetMaxX
-    );
-
-    gsap.to(carpetModel.position, {
-      duration: 0.5,
-      x: targetX,
-      ease: "power2.out",
-    });
-  } else if (deltaX > 0) {
-    // Move right
-    animateGroundPosition(new CANNON.Vec3(0, -15, 0));
-    const targetX = THREE.MathUtils.clamp(
-      carpetModel.position.x + 8, // Move right by 8 units
-      carpetMinX,
-      carpetMaxX
-    );
-
-    gsap.to(carpetModel.position, {
-      duration: 0.5,
-      x: targetX,
-      ease: "power2.out",
-    });
-  }
-
-  startX = currentX; // Update starting point
-
-  // Reset the timer whenever there's new movement
+  // Reset the timer to return positions after 4.5 seconds
   if (resetTimer) {
     clearTimeout(resetTimer);
   }
-  resetTimer = setTimeout(resetPositions, 4500); // Reset after 4.5 seconds of no movement
+  resetTimer = setTimeout(resetPositions, 4000); // Reset after 4.5 seconds
 }
 
-function endInteraction() {
-  isDragging = false;
-}
+// Add event listener to the button
+document.getElementById("moveLeft").addEventListener("click", moveLeft);
 
-// Mouse events
-window.addEventListener("mousedown", (e) => startInteraction(e.clientX));
-window.addEventListener("mousemove", (e) => moveInteraction(e.clientX));
-window.addEventListener("mouseup", endInteraction);
-
-// Touch events
-window.addEventListener("touchstart", (e) =>
-  startInteraction(e.touches[0].clientX)
-);
-window.addEventListener("touchmove", (e) =>
-  moveInteraction(e.touches[0].clientX)
-);
-window.addEventListener("touchend", endInteraction);
 function resetPositions() {
+  recreateBodyWithNewMass(0);
+  carpetMesh.position.x = 0;
+  animeteModel();
   // Reset groundBody position
-  groundBody.position.set(0, 0, 0);
 
   // Reset carpetModel position
-  gsap.to(carpetModel.position, {
+  gsap.to(carpetMesh.position, {
     duration: 0.5,
     x: 0,
     y: 0,
@@ -338,7 +296,7 @@ const tick = () => {
   }
 
   // Update controls
-  //   controls.update();
+  controls.update();
 
   // Render
   renderer.render(scene, camera);

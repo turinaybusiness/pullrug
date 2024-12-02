@@ -13,6 +13,9 @@ body {
       rgba(0, 0, 0, 0.25) 200%
     );
   background-blend-mode: multiply;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .webgl {
@@ -20,4 +23,34 @@ body {
   top: 0;
   left: 0;
   outline: none;
+  z-index: 0 !important;
+}
+
+.center-container {
+  position: fixed; /* Fixed to viewport */
+  top: 70%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Offset by half width and height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px; /* Adjust the width as needed */
+  height: 100px; /* Adjust the height as needed */
+
+  border-radius: 8px; /* Optional rounded corners */
+  z-index: 12; /* Ensure it is above the canvas */
+}
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
