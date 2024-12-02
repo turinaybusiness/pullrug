@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pull Rug</title>
+    <script type="module" crossorigin src="/assets/index-CW8u9X1_.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-VNtqbIuD.css">
+  </head>
+  <body>
+    <div class="center-container">
+      <button type="button" class="button" id="moveLeft">
+        <div class="button-top">Rug Pull?</div>
+        <div class="button-bottom"></div>
+        <!-- <div class="button-base"></div> -->
+      </button>
+    </div>
+
+    <canvas class="webgl"></canvas>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        async function fetchPumpFunData() {
+          const API_KEY = "BQY3q1vR0AkuzY1iOEuHOYDSJFQSHEiL";
+          const query = `
+      {
+        solana {
+          pumpFun {
+            topTokensByVolume(currency: {is: "SOL"}) {
+              token {
+                address
+                name
+                symbol
+              }
+              volume
+            }
+          }
+        }
+      }
+    `;
+
+          const response = await fetch("https://graphql.bitquery.io/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-API-KEY": API_KEY,
+            },
+            body: JSON.stringify({ query }),
+          });
+
+          const data = await response.json();
+          renderData(data.data.solana.pumpFun.topTokensByVolume);
+        }
+
+        function renderData(tokens) {
+          const container = document.querySelector(".center-container");
+          tokens.forEach((token) => {
+            const div = document.createElement("div");
+            div.textContent = `Name: ${token.token.name}, Symbol: ${token.token.symbol}, Volume: ${token.volume}`;
+            container.appendChild(div);
+          });
+        }
+
+        fetchPumpFunData();
+      });
+    </script>
+  </body>
+</html>
