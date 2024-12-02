@@ -178,9 +178,9 @@ body {
 }
 .output-container h2 {
   text-align: center;
-  color: #9d3636;
+  color: white;
   padding: 0.5em 0.5em;
-  text-shadow: 0.5px 0.5px rgba(255, 255, 255, 0.75);
+  text-shadow: 0.5px 0.5px rgba(0, 0, 0, 0.75);
 }
 /* Leaderboard item styles */
 .leaderboard-item {
