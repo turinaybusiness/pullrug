@@ -1,11 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const connectAccountButton = document.getElementById("connectAccount");
   const form = document.getElementById("rugForm");
   const thankYouMessage = document.getElementById("thankYouMessage");
+
+  // Load the audio file
+  const specialSound = new Audio("/sfx.mp3");
+
+  connectAccountButton.addEventListener("click", function () {
+    window.open("https://x.com/Pazyrykfirstrug", "_blank");
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
 
     const mintInput = document.getElementById("rugInput").value.trim();
+
+    // Special behavior for the specific Mint address
+    if (mintInput === "3xQnWtcvD2vdWDNDbkJxWviYVgRpTJdz3pnM8gyKpump") {
+      // Play the sound
+      specialSound.play();
+
+      // Display the special message
+      thankYouMessage.textContent =
+        "Never gonna let you down, never gonna let you go!";
+      thankYouMessage.style.display = "block";
+      thankYouMessage.style.color = "green"; // Optional styling
+      return; // Stop further form submission
+    }
 
     try {
       const response = await fetch("/api/store-mint", {
@@ -23,14 +44,13 @@ document.addEventListener("DOMContentLoaded", () => {
         thankYouMessage.style.display = "block";
       } else {
         // Display an error message
-        thankYouMessage.textContent =
-          data.error || "An error occurred. Please try again.";
+        thankYouMessage.textContent = data.error || "Please Enter Valid Token.";
         thankYouMessage.style.display = "block";
       }
     } catch (error) {
       console.error("Error submitting Mint address:", error);
       // Display a generic error message
-      thankYouMessage.textContent = "An error occurred. Please try again.";
+      thankYouMessage.textContent = "Please Enter Valid Token.";
       thankYouMessage.style.display = "block";
     }
   });

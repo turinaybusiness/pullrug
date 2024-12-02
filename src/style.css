@@ -87,7 +87,7 @@ body {
       rgba(0, 0, 0, 0.7),
       /* Darker overlay */ rgba(0, 0, 0, 0.7)
     ),
-    url("/bg3.jpg") no-repeat center center fixed;
+    url("/bg4.jpg") no-repeat center center fixed;
   background-size: cover; /* Ensures the image fills the viewport */
 }
 
@@ -101,18 +101,46 @@ body {
 
 .center-container {
   position: fixed; /* Fixed to viewport */
-  top: 70%; /* Center vertically */
+  top: 80%; /* Center vertically */
   left: 50%; /* Center horizontally */
   transform: translate(-50%, -50%); /* Offset by half width and height */
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 200px; /* Adjust the width as needed */
-  height: 100px; /* Adjust the height as needed */
-
+  flex-direction: column; /* Stack the form elements */
+  justify-content: center; /* Center elements vertically */
+  align-items: center; /* Center elements horizontally */
+  width: 300px; /* Adjust the width as needed */
+  padding: 20px; /* Add padding around the container */
   border-radius: 8px; /* Optional rounded corners */
+
   z-index: 12; /* Ensure it is above the canvas */
+  text-align: center;
 }
+.center-container input[type="text"] {
+  width: 90%;
+  padding: 10px; /* Add space inside the input */
+  margin-bottom: 10px; /* Add space between the input and the button */
+  font-size: 1rem;
+  border: 1px solid #ccccccba;
+  border-radius: 4px; /* Rounded corners */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+}
+
+.center-container input[type="text"]:focus {
+  outline: none; /* Remove the default blue outline */
+  border: 2px solid #9d3636; /* Customize the border color */
+  box-shadow: 0 0 5px #9d3636; /* Optional: Add a glow effect */
+}
+input:disabled,
+button:disabled {
+  background-color: #ccccccba; /* Gray background */
+  color: #666; /* Gray text */
+  cursor: not-allowed; /* Disabled cursor */
+}
+
+form#checkForm[disabled] {
+  opacity: 0.5; /* Indicate the form is disabled */
+}
+
 .button {
   -webkit-appearance: none;
   appearance: none;
@@ -221,6 +249,20 @@ body {
   display: flex;
   top: 50%;
   right: 20px;
+  transform: translateY(-50%);
+  max-height: 70%;
+  width: 400px;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  align-items: center;
+  z-index: 12;
+}
+.right-container {
+  position: absolute;
+  display: flex;
+  top: 50%;
+  left: 20px;
   transform: translateY(-50%);
   max-height: 70%;
   width: 400px;
@@ -386,17 +428,18 @@ body {
   text-shadow: 0.5px 0.5px rgba(0, 0, 0, 1);
 }
 .Rules {
-  position: fixed;
-  top: 50%;
+  position: relative;
+  /* top: 50%; */
   left: 20px;
-  transform: translateY(-50%);
+  /* transform: translateY(-50%); */
   width: 400px;
+  margin-bottom: 20px;
   max-height: 50%;
   overflow-y: auto;
   /* background-color: #ffffff; */
   /* border: 1px solid #ccc; */
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
   padding: 10px;
   font-family: "roboto-regular";
   z-index: 100;
@@ -433,6 +476,30 @@ body {
   margin: 10px 0;
   padding-left: 20px;
   list-style-type: disc;
+}
+.connect-Account {
+  font-family: "roboto-regular";
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #f0f4f7;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  width: auto;
+  max-width: 200px; /* Set a max width for Connect button */
+  margin: 0;
+}
+
+.connect-Account svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  fill: #000;
 }
 @media (max-width: 768px) {
   .output-container {
