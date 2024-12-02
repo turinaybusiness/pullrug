@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "env": {
+    "EDGE_CONFIG_ID": "ecfg_5umyunhbp7raldq05livwf4narzt"
+  },
+  "routes": [
+    {
+      "src": "/api/store-mint",
+      "dest": "/api/store-mint.js"
+    }
+  ]
+}

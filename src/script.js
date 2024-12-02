@@ -34,7 +34,14 @@ const rgbeLoader = new RGBELoader();
 // });
 
 let mixer = null;
-let charBody, characterModel, carpetModel, carpetMesh, characterpos, charShape;
+let charBody,
+  action2,
+  action3,
+  characterModel,
+  carpetModel,
+  carpetMesh,
+  characterpos,
+  charShape;
 const charscale = 0.05;
 gltfLoader.load("/models/carpet.glb", (gltf) => {
   carpetModel = gltf.scene;
@@ -47,7 +54,11 @@ gltfLoader.load("/models/carpet.glb", (gltf) => {
   });
   //   scene.add(carpetModel);
 });
-gltfLoader.load("/models/character5.glb", (gltf) => {
+gltfLoader.load("/models/chracter8.glb", (gltf) => {
+  console.log(
+    "Available animations:",
+    gltf.animations.map((anim) => anim.name)
+  );
   characterModel = gltf.scene;
   characterpos = gltf.scene.getObjectByName("Empty");
   animeteModel();
@@ -86,12 +97,13 @@ gltfLoader.load("/models/character5.glb", (gltf) => {
   world.addBody(charBody);
   if (gltf.animations.length > 0) {
     mixer = new THREE.AnimationMixer(gltf.scene);
-    const action = mixer.clipAction(gltf.animations[0]);
+    const action = mixer.clipAction(gltf.animations[2]);
     action.loop = THREE.LoopRepeat;
     action.play();
-    const action2 = mixer.clipAction(gltf.animations[1]);
+    action2 = mixer.clipAction(gltf.animations[0]);
     action2.loop = THREE.LoopRepeat;
     action2.play();
+    action3 = mixer.clipAction(gltf.animations[1]);
   }
 });
 function animeteModel() {
@@ -193,7 +205,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 // Physics world
 const world = new CANNON.World();
-world.gravity.set(0, -9.82, 0);
+world.gravity.set(0, -3.82, 0);
 
 let resetTimer = null;
 
@@ -219,7 +231,34 @@ function recreateBodyWithNewMass(newMass) {
 
   console.log("Body recreated with new mass:", newMass);
 }
+var animationValue = 0.35;
 function moveLeft() {
+  if (!mixer) {
+    console.error("Mixer not initialized. Ensure the model has animations.");
+    return;
+  }
+
+  // Stop the current animation
+
+  if (!action2) {
+    console.error("Action2 animation not found.");
+    return;
+  }
+  action2.stop(); // Stop "Armature|mixamo.com|Layer0"
+
+  // Play the "fall" animation
+
+  if (!action3) {
+    console.error("Fall animation not found.");
+    return;
+  }
+  animationValue = 2;
+  action3.loop = THREE.LoopOnce; // Play only once
+  action3.clampWhenFinished = true; // Stop the animation at the last frame
+  action3.reset(); // Reset the animation to the start
+  action3.play(); // Play the animation
+  // action2.loop = THREE.LoopRepeat;
+
   recreateBodyWithNewMass(1);
 
   const targetX = THREE.MathUtils.clamp(
@@ -231,6 +270,7 @@ function moveLeft() {
   gsap.to(carpetMesh.position, {
     duration: 3,
     x: targetX,
+    delay: 0.05,
     ease: "power2.out",
   });
 
@@ -245,6 +285,20 @@ function moveLeft() {
 document.getElementById("moveLeft").addEventListener("click", moveLeft);
 
 function resetPositions() {
+  animationValue = 0.35;
+  if (!action2 || !action3) {
+    console.error("Required animations not found.");
+    return;
+  }
+
+  // Reset action3 to its initial state
+  action3.stop();
+  action3.reset();
+
+  // Play the default animation (action2)
+  action2.loop = THREE.LoopRepeat; // Set to loop
+  action2.reset(); // Reset to the start
+  action2.play(); // Play the animation
   recreateBodyWithNewMass(0);
   carpetMesh.position.x = 0;
   animeteModel();
@@ -293,7 +347,7 @@ const tick = () => {
   //   cannonDebugger.update();
   // Model animation
   if (mixer) {
-    mixer.update(deltaTime * 0.35);
+    mixer.update(deltaTime * animationValue);
   }
 
   // Update controls
