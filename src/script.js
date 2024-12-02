@@ -29,11 +29,21 @@ const charscale = 0.05;
 gltfLoader.load("/models/carpet.glb", (gltf) => {
   carpetModel = gltf.scene;
   carpetModel.scale.set(charscale, charscale, charscale);
+  carpetModel.traverse((child) => {
+    if (child.isMesh) {
+      child.receiveShadow = true; // Carpet receives shadows
+    }
+  });
   scene.add(carpetModel);
 });
 gltfLoader.load("/models/wave.glb", (gltf) => {
   characterModel = gltf.scene;
   gltf.scene.scale.set(charscale, charscale, charscale);
+  characterModel.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true; // Wave casts shadows
+    }
+  });
   scene.add(gltf.scene);
 
   // Extract geometry from the GLB model
@@ -155,6 +165,7 @@ const renderer = new THREE.WebGLRenderer({
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(sizes.width, sizes.height);
+renderer.setClearColor(0x3f3f3f, 1);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 // Physics world
@@ -177,7 +188,7 @@ function animateGroundPosition(newPosition) {
   // Use GSAP to animate the position
   gsap.to(startPosition, {
     duration: 1, // Animation duration (1 second)
-    delay: 0.25,
+    delay: 0.15,
     x: targetPosition.x,
     y: targetPosition.y,
     z: targetPosition.z,
@@ -221,9 +232,9 @@ window.addEventListener("mousemove", (e) => {
 
   if (deltaX < 0) {
     // Move left
-    animateGroundPosition(new CANNON.Vec3(0, -20, 0));
+    animateGroundPosition(new CANNON.Vec3(0, -15, 0));
     const targetX = THREE.MathUtils.clamp(
-      carpetModel.position.x - 5, // Move left by 1 unit
+      carpetModel.position.x - 8, // Move left by 1 unit
       carpetMinX,
       carpetMaxX
     );
@@ -235,9 +246,9 @@ window.addEventListener("mousemove", (e) => {
     });
   } else if (deltaX > 0) {
     // Move right
-    animateGroundPosition(new CANNON.Vec3(0, -20, 0));
+    animateGroundPosition(new CANNON.Vec3(0, -15, 0));
     const targetX = THREE.MathUtils.clamp(
-      carpetModel.position.x + 5, // Move right by 1 unit
+      carpetModel.position.x + 8, // Move right by 1 unit
       carpetMinX,
       carpetMaxX
     );
