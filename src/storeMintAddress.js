@@ -1,7 +1,7 @@
 document.getElementById("rugForm").addEventListener("submit", async (e) => {
   e.preventDefault(); // Prevent form reload
 
-  const mintInput = document.getElementById("mintInput").value.trim();
+  const mintInput = document.getElementById("rugInput").value.trim();
 
   try {
     const response = await fetch("/api/store-mint", {
