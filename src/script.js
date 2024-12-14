@@ -239,7 +239,9 @@ function recreateBodyWithNewMass(newMass) {
   console.log("Body recreated with new mass:", newMass);
 }
 var animationValue = 0.35;
+
 function moveLeft() {
+  console.log('moveLeft called');
   if (!mixer) {
     console.error("Mixer not initialized. Ensure the model has animations.");
     return;
@@ -251,7 +253,7 @@ function moveLeft() {
     console.error("Action2 animation not found.");
     return;
   }
-  action2.stop(); // Stop "Armature|mixamo.com|Layer0"
+
 
   // Play the "fall" animation
 
@@ -259,12 +261,12 @@ function moveLeft() {
     console.error("Fall animation not found.");
     return;
   }
+    action2.stop(); // Stop "Armature|mixamo.com|Layer0"
   animationValue = 2;
   action3.loop = THREE.LoopOnce; // Play only once
   action3.clampWhenFinished = true; // Stop the animation at the last frame
   action3.reset(); // Reset the animation to the start
   action3.play(); // Play the animation
-  // action2.loop = THREE.LoopRepeat;
 
   recreateBodyWithNewMass(1);
 
@@ -289,7 +291,7 @@ function moveLeft() {
 }
 
 // Add event listener to the button
-document.getElementById("moveLeft").addEventListener("click", moveLeft);
+// document.getElementById("checkRisk").addEventListener("click", moveLeft);
 
 function resetPositions() {
   animationValue = 0.35;
@@ -355,6 +357,7 @@ const tick = () => {
   // Model animation
   if (mixer) {
     mixer.update(deltaTime * animationValue);
+    
   }
 
   // Update controls
@@ -368,3 +371,51 @@ const tick = () => {
 };
 
 tick();
+document.addEventListener("DOMContentLoaded", () => {
+  const checkRiskButton = document.getElementById("checkRisk");
+  const riskResultDiv = document.getElementById("riskResult");
+
+  checkRiskButton.addEventListener("click", async () => {
+    const pumpAddress = document.getElementById("checkInput").value.trim();
+
+    // Clear previous results
+    riskResultDiv.textContent = "";
+
+    if (!pumpAddress) {
+      riskResultDiv.textContent = "Please enter a token address.";
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://snitcharugbot-1.onrender.com/analyze?token=${encodeURIComponent(pumpAddress)}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch token analysis.");
+      }
+
+      const data = await response.json();
+
+      if (data.status === "success") {
+        const { risk_level, risk_score, risk_factors } = data.data;
+        riskResultDiv.innerHTML = `
+          <p>Risk Level: ${risk_level}</p>
+          <p>Risk Score: ${risk_score.toFixed(2)}</p>
+        
+        `;
+
+        if (data.status === 'success' && (data.data.risk_level !== 'LOW')) {
+          moveLeft();
+        }
+      }else {
+        riskResultDiv.textContent = `Error: ${data.error}`;
+      }
+    } catch (error) {
+      riskResultDiv.textContent = `Error: ${error.message}`;
+    }
+  });
+});

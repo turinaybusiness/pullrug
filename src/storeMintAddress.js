@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   const connectAccountButton = document.getElementById("connectAccount");
   const form = document.getElementById("rugForm");
@@ -7,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   connectAccountButton.addEventListener("click", function () {
     window.open("https://x.com/Pazyrykfirstrug", "_blank");
+
   });
 
   form.addEventListener("submit", async (e) => {
